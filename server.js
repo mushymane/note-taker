@@ -34,11 +34,45 @@ app.get('/api/notes', (req, res) => {
             res.json(JSON.parse(data));
         }
     })
-        
 
     // Log our request to the terminal
     console.info(`${req.method} request received to get notes`);
 });
+
+app.post('/api/notes', (req, res) => {
+    console.log(`${req.method} request received to add a note`)
+
+    const {title, text} = req.body;
+
+    if (title && text) {
+        const newNote = {
+            title,
+            text,
+            id: uuidv4()
+        }
+
+        fs.readFile('./db/db.json', 'utf-8', (err, data) => {
+            if (err) {
+                console.log(err);
+            } else {
+                const parsedNotes = JSON.parse(data);
+                parsedNotes.push(newNote)
+                fs.writeFile('./db/db.json', JSON.stringify(parsedNotes, null, 4), (err) => {
+                    err ? console.log(err) : console.log('successfully added note')
+                })
+            }
+        })
+        const response = {
+            status: 'success',
+            body: newNote
+        }
+
+        console.log(response);
+        res.json(response);
+    } else {
+        res.json('unable to post note')
+    }
+})
 
 // Wildcard route to direct users to landing page
 app.get('*', (req, res) =>
