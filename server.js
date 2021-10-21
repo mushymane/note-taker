@@ -3,7 +3,6 @@ const path = require('path');
 const fs = require('fs');
 const notes = require('./db/db.json');
 const { v4: uuidv4 } = require('uuid');
-//uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed' use later
 
 // const PORT = process.env.port || 3001;
 const PORT = 3001;
@@ -39,6 +38,7 @@ app.get('/api/notes', (req, res) => {
     console.info(`${req.method} request received to get notes`);
 });
 
+// POST request for notes
 app.post('/api/notes', (req, res) => {
     console.log(`${req.method} request received to add a note`)
 
@@ -72,6 +72,20 @@ app.post('/api/notes', (req, res) => {
     } else {
         res.json('unable to post note')
     }
+})
+
+app.delete('/api/notes/:id', (req, res) => {
+    console.log(`${req.method} request received to delete a note`)
+    const id = req.params.id;
+    fs.readFile('./db/db.json', 'utf-8', (err, data) => {
+        const parsedNotes = JSON.parse(data);
+        const updatedNotes = parsedNotes.filter((note) => note.id !== id);
+
+        fs.writeFile('./db/db.json', JSON.stringify(updatedNotes, null, 4), (err) => {
+            err ? console.log(err) : console.log('successfully deleted note')
+        })
+        res.json(`Note with id ${id} deleted`);
+    })
 })
 
 // Wildcard route to direct users to landing page
