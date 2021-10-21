@@ -4,8 +4,8 @@ const fs = require('fs');
 const notes = require('./db/db.json');
 const { v4: uuidv4 } = require('uuid');
 
-// const PORT = process.env.port || 3001;
-const PORT = 3001;
+const PORT = process.env.port || 3001;
+// const PORT = 3001;
 
 const app = express();
 
@@ -62,6 +62,7 @@ app.post('/api/notes', (req, res) => {
                 })
             }
         })
+
         const response = {
             status: 'success',
             body: newNote
@@ -74,6 +75,7 @@ app.post('/api/notes', (req, res) => {
     }
 })
 
+// DELETE request for notes
 app.delete('/api/notes/:id', (req, res) => {
     console.log(`${req.method} request received to delete a note`)
     const id = req.params.id;
@@ -92,8 +94,6 @@ app.delete('/api/notes/:id', (req, res) => {
 app.get('*', (req, res) =>
     res.sendFile(path.join(__dirname, 'public/index.html'))
 );
-
-// const readFromFile = util.promisify(fs.readFile);
 
 // Listen to connection
 app.listen(PORT, () => {
